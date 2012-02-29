@@ -2,9 +2,10 @@
     "author": "",
 	"name": "useful-functions",
 	"description": "Useful functions.",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"repository": {
-		"url": ""
+		"type": "git",
+		"url": "https://github.com/unlight/useful-functions.js"
 	},
 	"main": "index",
 	"engines": {

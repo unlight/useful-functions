@@ -70,6 +70,43 @@ module.exports.trim = function trim(str, charlist) {
 	return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
 }
 
+
+module.exports.randomString = function randomString(Length, CharacterOptions) {
+	if (typeof CharacterOptions != 'string') CharacterOptions = 'a0';
+	var CharacterClasses = {
+		'A': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+		'a': 'abcdefghijklmnopqrstuvwxyz',
+		'0': '0123456789',
+		'!': '~!@#$^&*_+-'
+	};
+	var Characters = '';
+	for (var i = 0; i < CharacterOptions.length; i++) {
+		Characters += self.getValue(CharacterOptions.substr(i, 1), CharacterClasses);
+	}
+	var CharLen = Characters.length - 1;
+	var string = '' ;
+	for (var i = 0; i < Length; ++i) {
+		var Offset = self.rand() % CharLen;
+		string += Characters.substr(Offset, 1);
+	}
+	return string;
+}
+
+// Returns a random number
+// http://kevin.vanzonneveld.net
+// + original by: Onno Marsman
+module.exports.rand = function rand(min, max) {
+		if (arguments.length === 0) {
+			min = 0;
+			max = 2147483647;
+		} else if (arguments.length === 1) {
+			throw new Error('Warning: rand() expects exactly 2 parameters, 1 given.');
+		}
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+}
+
+
 module.exports.getClassName = function getClassName(actor) {
 	var result = ucfirst(typeof actor);
 	if (actor && actor.constructor && typeof actor.constructor == 'object') {
