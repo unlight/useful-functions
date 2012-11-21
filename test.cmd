@@ -1,0 +1,1 @@
+supervisor --watch ./,./library test.js
