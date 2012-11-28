@@ -1,14 +1,14 @@
 {
 	"author": "S",
-	"url": "http://rv-home.ru/",
-	"name": "useful-functions",
+	"url": "http://rv-home.ru",
+	"name": "useful-functions.js",
 	"description": "Useful functions.",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/unlight/useful-functions.js"
 	},
-	"main": "index",
+	"main": "./functions.js",
 	"engines": {
 		"node": ">=0.8"
 	},
