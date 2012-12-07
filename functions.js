@@ -280,7 +280,6 @@ self.getValueR = function(key, collection, defaultResult) {
 			return defaultResult;
 		}
 	}
-	console.log("value", value);
 	return value;
 }
 

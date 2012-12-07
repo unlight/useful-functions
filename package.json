@@ -3,7 +3,7 @@
 	"url": "http://rv-home.ru",
 	"name": "useful-functions.js",
 	"description": "Useful functions.",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/unlight/useful-functions.js"
@@ -14,5 +14,7 @@
 	},
 	"keywords": ["dev", "debug", "functions"],
 	"dependencies": {},
-	"devDependencies": {}
+	"devDependencies": {
+		"wru": "0.1.x"
+	}
 }
