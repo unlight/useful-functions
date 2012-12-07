@@ -167,6 +167,7 @@ function getClassName(object) {
 		var functionCode = object.constructor.toString();
 		var pos = functionCode.indexOf('(');
 		result = self.trim(functionCode.substr(8, pos-8));
+		if (result == "") result = "(Anonymous)";
 	} else {
 		result = toString.call(object).slice(8, -1);
 	}
