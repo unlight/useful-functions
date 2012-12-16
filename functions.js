@@ -9,6 +9,91 @@ var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
 
+/**
+* Function for drawing text as table like in MySQL client console.
+* Example:
+Row1 = array('Yvan', 'kras@mail.com', '1');
+Row2 = array('John', 'dsffffkrok@mail.ag', '0');
+textTableFormat(array('FirstName', 'Email', 'OnlineWork'), array(Row1, Row2, ...));
+Result:
++-----------+-------------------------+------------+
+| FirstName | Email                   | OnlineWork |
++-----------+-------------------------+------------+
+| Yvan      | kras@mail.com           |          1 |
+| John      | dsffffkrok@mail.ag      |          0 |
+| Dummy     | krokuswww@mail.com      |          1 |
+| Andy      | lande@reg.maosss.cow    |          0 |
++-----------+-------------------------+------------+
+*/
+self.textTableFormat = (function() {
+	// TODO: FIX FOR MULTILINE TEXT
+	var textDataSeparator = function(maxLengthArray) {
+		var result = '';
+		for (var i = 0, count = maxLengthArray.length; i < count; i++) {
+			var length = maxLengthArray[i];
+			result += '+-' + (new Array(length + 1)).join("-") + '-';
+		}
+		return result + '+';
+	}
+	var arrayValues = function(array) {
+		var result = [];
+		for (var i in array) result.push(array[i]);
+		return result;
+	}
+	var strPadSpace = function(value, size) {
+		var pad = '';
+		var diff = size - ("" + value).length;
+		if (diff > 0) {
+			pad = (new Array(diff + 1)).join(' ');
+			if (self.isNumeric(value)) {
+				var tmp = value;
+				value = pad;
+				pad = tmp;
+			}
+		}
+		return value + pad;
+	}
+	var textDataRow = function(array, maxLengthArray) {
+		var result = '';
+		array = arrayValues(array);
+		for (var i in array) {
+			var value = array[i];
+			var maxLengthOfRow = maxLengthArray[i];
+			// TODO: How are we going to display null values?
+			result += '| ' + strPadSpace(value, maxLengthOfRow) + ' ';
+		}
+		return result + '|';
+	}
+
+	return function(headers, dataArray, options) {
+		var length = headers.length;
+		// var maxLengthArray = (new Array(length)).map(parseInt);
+		var maxLengthArray = [];
+		dataArray.unshift(headers);
+		// 1. Detect max length.
+		for (var k in dataArray) {
+			var data = arrayValues(dataArray[k]);
+			for (var i = 0; i < length; i++) {
+				var localLength = ("" + data[i]).length;
+				if (maxLengthArray[i] === undefined) maxLengthArray[i] = 0;
+				if (localLength > maxLengthArray[i]) maxLengthArray[i] = localLength;
+			}
+		}
+		var result = "";
+		// 2. Draw headers.
+		result += textDataSeparator(maxLengthArray) + "\n";
+		result += textDataRow(dataArray.shift(), maxLengthArray) + "\n";	
+		result += textDataSeparator(maxLengthArray) + "\n";
+		// 3. Draw table rows.
+		for (var n in dataArray) {
+			result += textDataRow(dataArray[n], maxLengthArray) + "\n";
+		}
+		result += textDataSeparator(maxLengthArray);
+
+		return result;
+	};
+})();
+
 function getServerResponse() {
 	arguments[-1] = global["_RESPONSE"];
 	for (var i = -1, length = arguments.length; i < length; i++) {
@@ -367,7 +452,7 @@ self.suffixString = function(string, suffix) {
 }
 
 /**
- * Takes a string, and prefixes it with $Prefix unless it is already prefixed that way.
+ * Takes a string, and prefixes it with Prefix unless it is already prefixed that way.
  * @param  {string} prefix The prefix to use.
  * @param  {string} string The string to be prefixed.
  * @return {string}
