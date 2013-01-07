@@ -14,7 +14,7 @@ module.exports = self;
  * @param  {string} str 
  * @return {int}     [description]
  */
-function crc32 (str) {
+function crc32(str) {
 	// http://kevin.vanzonneveld.net
 	// +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
 	// +   improved by: T0bsn
@@ -37,6 +37,11 @@ function crc32 (str) {
 
 	return crc ^ (-1);
 }
+
+function ucrc32(str) {
+	return crc32(str) >>> 0;
+}
+
 
 /**
 * Function for drawing text as table like in MySQL client console.
@@ -699,5 +704,6 @@ module.exports.insideCut = insideCut;
 module.exports.exceptionHandler = exceptionHandler;
 module.exports.getClassName = getClassName;
 module.exports.crc32 = crc32;
+module.exports.ucrc32 = ucrc32;
 
 if (typeof global["d"] == "undefined") global["d"] = d;
