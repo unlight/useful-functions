@@ -9,6 +9,20 @@ var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
 
+
+// http://andrewdupont.net/2009/08/28/deep-extending-objects-in-javascript/
+self.extend = function(destination, source) {
+	for (var property in source) {
+		if (source[property] && source[property].constructor && source[property].constructor === Object) {
+			destination[property] = destination[property] || {};
+			arguments.callee(destination[property], source[property]);
+		} else {
+			destination[property] = source[property];
+		}
+	}
+	return destination;
+};
+
 /**
  * http://phpjs.org/functions/crc32/
  * @param  {string} str 
