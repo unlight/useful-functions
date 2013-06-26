@@ -10,6 +10,40 @@ var self = {};
 module.exports = self;
 
 
+self.setValueR = function(fields, object, value) {
+
+	if (typeof fields !== 'string') throw new Error('Argument #1 expects a string.');
+	fields = fields.split(/\./);
+
+	function levelUp (obj, field, value) {
+		if (typeof obj[field] !== 'undefined') {
+			if (fields.length === 0) {
+				// var oldVal = obj[field];
+				obj[field] = value;
+				return value;
+			} else {
+				if (typeof obj[field] !== 'object') {
+					obj[field] = {};
+				}
+				return levelUp(obj[field], fields.shift(), value);
+			}
+		} else {
+			// keep going if necessary
+			if (fields.length === 0) {
+				obj[field] = value;
+				return value;
+			} else {
+				// var newField = fields.shift()
+				obj[field] = {}; // {newField: value}
+				return levelUp(obj[field], fields.shift(), value);
+			}
+		}
+	}
+
+	return levelUp(object, fields.shift(), value);
+};
+
+
 // http://andrewdupont.net/2009/08/28/deep-extending-objects-in-javascript/
 self.extend = function(destination, source) {
 	for (var property in source) {
