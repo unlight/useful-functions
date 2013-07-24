@@ -9,7 +9,6 @@ var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
 
-
 self.setValueR = function(fields, object, value) {
 
 	if (typeof fields !== 'string') throw new Error('Argument #1 expects a string.');
@@ -744,6 +743,70 @@ function d() {
 		response.end();
 	}
 }
+
+self.formatString = (function() {
+	var formatStringCallback = function(data, match, stringInfo) {
+		// Parse out the field and format.
+		var parts = stringInfo.split(",");
+		var field = self.trim(parts[0]);
+		var format = self.trim(self.getValue(1, parts, ""));
+		var subFormat = self.trim(self.getValue(2, parts, "")).toLowerCase();
+		var formatArgs = self.getValue(3, parts, "");
+
+		if (inArray(format, ["currency", "integer", "percent"])) {
+			formatArgs = subFormat;
+			subFormat = format;
+			format = "number";
+		} else if (self.isNumeric(subFormat)) {
+			formatArgs = subFormat;
+			subFormat = "";
+		}
+		
+		var value = self.getValueR(field, data, "");
+
+		// console.log("parts", parts);
+		// console.log("format", format);
+		// console.log("subFormat", subFormat);
+		// console.log("formatArgs", formatArgs);
+		// console.log("field", field);
+		// console.log("data", data);
+		// console.log("value", value);
+
+		var result = "";
+		if (value == "" && !inArray(format, ["url", "exurl"])) {
+			return result;
+		}
+
+		switch (format.toLowerCase()) {
+			case "date": {
+				switch (subFormat) {
+					case "short": result = formatDate(value, "%d/%m/%Y");
+				}
+			} break;
+			case "number": {
+				if (!self.isNumeric(value)) {
+					result = value;
+					break;
+				}
+				switch (subFormat) {
+					case "currency": result = '$' + number_format(value, self.isNumeric(formatArgs) ? formatArgs : 2);
+				}
+			} break;
+			default: {
+				result = value;
+			}
+		}
+		return result;
+	};
+   
+	return function(string, data) {
+		return string.replace(/{([^\s][^}]+[^\s]?)}/, function() {
+			var args = Array.prototype.slice.call(arguments);
+			args.unshift(data);
+			return formatStringCallback.apply(null, args);
+		});
+	};
+})();
 
 module.exports.d = d;
 module.exports.inArray = inArray;
