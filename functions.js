@@ -9,6 +9,19 @@ var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
 
+self.isObject = function(mixed_var) {
+	if (Object.prototype.toString.call(mixed_var) === '[object Array]') {
+		return false;
+	}
+	return mixed_var !== null && typeof mixed_var === 'object';
+};
+
+
+self.isIterable = function (mixed) {
+	return mixed !== null && typeof mixed === "object";
+};
+
+
 self.setValueR = function(fields, object, value) {
 
 	if (typeof fields !== 'string') throw new Error('Argument #1 expects a string.');
