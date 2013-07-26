@@ -10,8 +10,8 @@ var self = {};
 module.exports = self;
 
 self.varType = function(mixed) {
+	if (mixed === null) return "null";
 	var result = typeof mixed;
-	if (result === null) return "null";
 	if (result == "object") result = getClassName(mixed).toLowerCase();
 	if (result == "number") {
 		result = self.isFloat(mixed) ? "float" : "integer";
