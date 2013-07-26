@@ -9,6 +9,17 @@ var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
 
+self.varType = function(mixed) {
+	var result = typeof mixed;
+	if (result === null) return "null";
+	if (result == "object") result = getClassName(mixed).toLowerCase();
+	if (result == "number") {
+		result = self.isFloat(mixed) ? "float" : "integer";
+	}
+	return result;
+}
+
+
 self.isObject = function(mixed_var) {
 	if (Object.prototype.toString.call(mixed_var) === '[object Array]') {
 		return false;
@@ -401,6 +412,10 @@ self.clamp = function(v, a, b) {
 self.isNumeric = function(mixed) {
 	var result = !isNaN(parseFloat(mixed)) && isFinite(mixed);
 	return result;
+}
+
+self.isFloat = function(mixed) {
+	return +mixed === mixed && (!isFinite(mixed) || !!(mixed % 1));
 }
 
 self.isString = function(object) {
