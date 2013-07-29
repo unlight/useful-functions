@@ -1,17 +1,17 @@
-var ServerResponse = require('http').ServerResponse;
-var ServerRequest = require('http').IncomingMessage;
-var fs = require('fs');
-var utilLog = require('util').log; 
-var isArray = require('util').isArray;
-var inspect = require('util').inspect;
-var format = require('util').format;
+var ServerResponse = require("http").ServerResponse;
+var ServerRequest = require("http").IncomingMessage;
+var fs = require("fs");
+var utilLog = require("util").log; 
+var isArray = require("util").isArray;
+var inspect = require("util").inspect;
+var format = require("util").format;
 var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
 
-self.varType = function(mixed) {
+function varType(mixed) {
+	if (mixed === null) return "null";
 	var result = typeof mixed;
-	if (result === null) return "null";
 	if (result == "object") result = getClassName(mixed).toLowerCase();
 	if (result == "number") {
 		result = self.isFloat(mixed) ? "float" : "integer";
@@ -20,11 +20,11 @@ self.varType = function(mixed) {
 }
 
 
-self.isObject = function(mixed_var) {
-	if (Object.prototype.toString.call(mixed_var) === '[object Array]') {
+self.isObject = function(mixed) {
+	if (Object.prototype.toString.call(mixed) === "[object Array]") {
 		return false;
 	}
-	return mixed_var !== null && typeof mixed_var === 'object';
+	return mixed !== null && typeof mixed === "object";
 };
 
 
@@ -35,17 +35,17 @@ self.isIterable = function (mixed) {
 
 self.setValueR = function(fields, object, value) {
 
-	if (typeof fields !== 'string') throw new Error('Argument #1 expects a string.');
-	fields = fields.split(/\./);
+	if (typeof fields !== "string") throw new Error('Argument #1 expects a string, given ' + varType(fields) + '.');
+	fields = fields.split(".");
 
 	function levelUp (obj, field, value) {
-		if (typeof obj[field] !== 'undefined') {
+		if (typeof obj[field] !== "undefined") {
 			if (fields.length === 0) {
 				// var oldVal = obj[field];
 				obj[field] = value;
 				return value;
 			} else {
-				if (typeof obj[field] !== 'object') {
+				if (typeof obj[field] !== "object") {
 					obj[field] = {};
 				}
 				return levelUp(obj[field], fields.shift(), value);
@@ -854,5 +854,6 @@ module.exports.isArray = isArray;
 module.exports.insideCut = insideCut;
 module.exports.exceptionHandler = exceptionHandler;
 module.exports.getClassName = getClassName;
+module.exports.varType = varType;
 
 if (typeof global["d"] == "undefined") global["d"] = d;
