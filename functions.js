@@ -309,7 +309,7 @@ self.googleTranslate = function(string, settings, callback) {
 			var pos = body.indexOf("]]");
 			body = body.substr(1, pos + 1);
 			try {
-				var json = JSON.parse(body);	
+				var json = JSON.parse(body);
 			} catch (e) {
 				var error = new Error(["JSON parse", e.name, e.message].join(", ") + ".");
 				if (callback) callback(error, false);
