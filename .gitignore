@@ -2,3 +2,6 @@
 __*
 /node_modules/
 /~notes/
+~*
+.npmignore
+*.log
