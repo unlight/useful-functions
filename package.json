@@ -1,7 +1,7 @@
 {
 	"author": "S",
 	"url": "http://rv-home.ru",
-	"name": "useful-functions",
+	"name": "useful-functions.js",
 	"description": "Useful functions for everyday javascript.",
 	"version": "1.0.15",
 	"repository": {
