@@ -489,6 +489,15 @@ self.stringBeginsWith = function(haystack, needle) {
 	return result;
 }
 
+self.stringEndsWith = function(haystack, needle) {
+	haystack = "" + haystack;
+	needle = "" + needle;
+	var position = haystack.length;
+	position = position - needle.length;
+	var lastIndex = haystack.lastIndexOf(needle);
+	return lastIndex !== -1 && lastIndex === position;
+}
+
 self.getValue = function(key, collection, value, remove) {
 	if (value === undefined) value = false;
 	if (remove === undefined) remove = false;
