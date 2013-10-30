@@ -853,10 +853,7 @@ self.phpFunction = function(name, callback) {
 		throw new Error("Unknown function " + func + ".");
 	}
 	if (_phpFunctions[func]) {
-		if (typeof callback != "function") {
-			var args = Array.prototype.slice.call(arguments, 1);
-			_phpFunctions[func].apply(null, args);
-		} else {
+		if (typeof callback == "function") {
 			callback(null, _phpFunctions[func]);
 		}
 		return;
@@ -868,7 +865,7 @@ self.phpFunction = function(name, callback) {
 	var request = https.get(url, function(response) {
 		if (response.statusCode != 200) {
 			if (callback) {
-				callback(new Error("Invalid request."));	
+				callback(new Error("Invalid request, code " + response.statusCode + "."));
 			}
 			return;
 		}
@@ -879,8 +876,11 @@ self.phpFunction = function(name, callback) {
 		response.on("end", function() {
 			var vm = require("vm");
 			vm.runInNewContext(body, _phpFunctions);
-			if (callback) {
-				callback(null, _phpFunctions[func]);
+			if (_phpFunctions[func]) {
+				if (typeof callback == "function") {
+					callback(null, _phpFunctions[func]);
+				}
+				return;
 			}
 		});
 	});
