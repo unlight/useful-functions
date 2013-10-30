@@ -7,13 +7,16 @@ collection.push({
 	name: "Google translate",
 	test: function() {
 		wru.assert("Function exists", typeof googleTranslate == "function");
-		// var callback = wru.async(function(){...});
-		googleTranslate("Hello, world!", {from: "en", to: "ru"}, wru.async(function (error, result, others) {
-			wru.assert("Hello world translate (en -> ru)", result == "Привет, мир!");
+
+		googleTranslate("This need for translation", {from: "en", to: "ru"}, wru.async(function (error, result, others) {
+			wru.assert("translate (en -> ru)", result == "Это необходимо для перевода");
 			wru.assert(error, !error);
-			// wru.assert("OK", "OK" === arg);
-			// wru.assert(setup === 1);
-			// wru.assert(teardown == null);
+		}));
+
+		// var callback = wru.async(function(){...});
+		googleTranslate("Москва", {from: "ru", to: "en"}, wru.async(function (error, result, others) {
+			wru.assert("translate (ru -> en)", result == "Moscow");
+			wru.assert(error, !error);
 		}));
 	}
 });

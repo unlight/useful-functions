@@ -1,13 +1,84 @@
-var ServerResponse = require('http').ServerResponse;
-var ServerRequest = require('http').IncomingMessage;
-var fs = require('fs');
-var utilLog = require('util').log; 
-var isArray = require('util').isArray;
-var inspect = require('util').inspect;
-var format = require('util').format;
+var ServerResponse = require("http").ServerResponse;
+var ServerRequest = require("http").IncomingMessage;
+var fs = require("fs");
+var utilLog = require("util").log; 
+var isArray = require("util").isArray;
+var inspect = require("util").inspect;
+var format = require("util").format;
 var toString = Object.prototype.toString;
 var self = {};
 module.exports = self;
+
+function varType(mixed) {
+	if (mixed === null) return "null";
+	var result = typeof mixed;
+	if (result == "object") result = getClassName(mixed).toLowerCase();
+	if (result == "number") {
+		result = self.isFloat(mixed) ? "float" : "integer";
+	}
+	return result;
+}
+
+
+self.isObject = function(mixed) {
+	if (Object.prototype.toString.call(mixed) === "[object Array]") {
+		return false;
+	}
+	return mixed !== null && typeof mixed === "object";
+};
+
+
+self.isIterable = function (mixed) {
+	return mixed !== null && typeof mixed === "object";
+};
+
+
+self.setValueR = function(fields, object, value) {
+
+	if (typeof fields !== "string") throw new Error('Argument #1 expects a string, given ' + varType(fields) + '.');
+	fields = fields.split(".");
+
+	function levelUp (obj, field, value) {
+		if (typeof obj[field] !== "undefined") {
+			if (fields.length === 0) {
+				// var oldVal = obj[field];
+				obj[field] = value;
+				return value;
+			} else {
+				if (typeof obj[field] !== "object") {
+					obj[field] = {};
+				}
+				return levelUp(obj[field], fields.shift(), value);
+			}
+		} else {
+			// keep going if necessary
+			if (fields.length === 0) {
+				obj[field] = value;
+				return value;
+			} else {
+				// var newField = fields.shift()
+				obj[field] = {}; // {newField: value}
+				return levelUp(obj[field], fields.shift(), value);
+			}
+		}
+	}
+
+	return levelUp(object, fields.shift(), value);
+};
+
+
+// http://andrewdupont.net/2009/08/28/deep-extending-objects-in-javascript/
+self.extend = function(destination, source) {
+	for (var property in source) {
+		if (source[property] && source[property].constructor && source[property].constructor === Object) {
+			destination[property] = destination[property] || {};
+			arguments.callee(destination[property], source[property]);
+		} else {
+			destination[property] = source[property];
+		}
+	}
+	return destination;
+};
 
 /**
  * http://phpjs.org/functions/crc32/
@@ -238,7 +309,7 @@ self.googleTranslate = function(string, settings, callback) {
 			var pos = body.indexOf("]]");
 			body = body.substr(1, pos + 1);
 			try {
-				var json = JSON.parse(body);	
+				var json = JSON.parse(body);
 			} catch (e) {
 				var error = new Error(["JSON parse", e.name, e.message].join(", ") + ".");
 				if (callback) callback(error, false);
@@ -341,6 +412,10 @@ self.clamp = function(v, a, b) {
 self.isNumeric = function(mixed) {
 	var result = !isNaN(parseFloat(mixed)) && isFinite(mixed);
 	return result;
+}
+
+self.isFloat = function(mixed) {
+	return +mixed === mixed && (!isFinite(mixed) || !!(mixed % 1));
 }
 
 self.isString = function(object) {
@@ -697,11 +772,88 @@ function d() {
 	}
 }
 
+self.formatString = (function() {
+	var formatStringCallback = function(data, match, stringInfo) {
+		// Parse out the field and format.
+		var parts = stringInfo.split(",");
+		var field = self.trim(parts[0]);
+		var format = self.trim(self.getValue(1, parts, ""));
+		var subFormat = self.trim(self.getValue(2, parts, "")).toLowerCase();
+		var formatArgs = self.getValue(3, parts, "");
+
+		if (inArray(format, ["currency", "integer", "percent"])) {
+			formatArgs = subFormat;
+			subFormat = format;
+			format = "number";
+		} else if (self.isNumeric(subFormat)) {
+			formatArgs = subFormat;
+			subFormat = "";
+		}
+		
+		var value = self.getValueR(field, data, "");
+
+		// console.log("parts", parts);
+		// console.log("format", format);
+		// console.log("subFormat", subFormat);
+		// console.log("formatArgs", formatArgs);
+		// console.log("field", field);
+		// console.log("data", data);
+		// console.log("value", value);
+
+		var result = "";
+		if (value == "" && !inArray(format, ["url", "exurl"])) {
+			return result;
+		}
+
+		switch (format.toLowerCase()) {
+			case "date": {
+				switch (subFormat) {
+					case "short": result = formatDate(value, "%d/%m/%Y");
+				}
+			} break;
+			case "number": {
+				if (!self.isNumeric(value)) {
+					result = value;
+					break;
+				}
+				switch (subFormat) {
+					case "currency": result = '$' + number_format(value, self.isNumeric(formatArgs) ? formatArgs : 2);
+				}
+			} break;
+			default: {
+				result = value;
+			}
+		}
+		return result;
+	};
+   
+	return function(string, data) {
+		return string.replace(/{([^\s][^}]+[^\s]?)}/, function() {
+			var args = Array.prototype.slice.call(arguments);
+			args.unshift(data);
+			return formatStringCallback.apply(null, args);
+		});
+	};
+})();
+
+// function inherits (c, p, proto) {
+//   proto = proto || {}
+//   var e = {}
+//   ;[c.prototype, proto].forEach(function (s) {
+//     Object.getOwnPropertyNames(s).forEach(function (k) {
+//       e[k] = Object.getOwnPropertyDescriptor(s, k)
+//     })
+//   })
+//   c.prototype = Object.create(p.prototype, e)
+//   c.super = p
+// }
+
 module.exports.d = d;
 module.exports.inArray = inArray;
 module.exports.isArray = isArray;
 module.exports.insideCut = insideCut;
 module.exports.exceptionHandler = exceptionHandler;
 module.exports.getClassName = getClassName;
+module.exports.varType = varType;
 
 if (typeof global["d"] == "undefined") global["d"] = d;

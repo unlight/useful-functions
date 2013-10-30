@@ -2,11 +2,11 @@
 	"author": "S",
 	"url": "http://rv-home.ru",
 	"name": "useful-functions.js",
-	"description": "Useful functions.",
-	"version": "1.0.7",
+	"description": "Useful functions for everyday javascript.",
+	"version": "1.0.15",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/unlight/useful-functions.js"
+		"url": "https://github.com/unlight/useful-functions"
 	},
 	"main": "./functions.js",
 	"engines": {

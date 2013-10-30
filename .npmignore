@@ -1,2 +1,5 @@
-examples/*
+/examples/
 __*
+/node_modules/
+/~notes/
+.npmignore
