@@ -35,7 +35,7 @@ self.isIterable = function (mixed) {
 
 self.setValueR = function(fields, object, value) {
 
-	if (typeof fields !== "string") throw new Error('Argument #1 expects a string, given ' + varType(fields) + '.');
+	if (typeof fields !== "string") throw new Error("Argument #1 expects a string, given " + varType(fields) + ".");
 	fields = fields.split(".");
 
 	function levelUp (obj, field, value) {
@@ -845,17 +845,49 @@ self.formatString = (function() {
 	};
 })();
 
-// function inherits (c, p, proto) {
-//   proto = proto || {}
-//   var e = {}
-//   ;[c.prototype, proto].forEach(function (s) {
-//     Object.getOwnPropertyNames(s).forEach(function (k) {
-//       e[k] = Object.getOwnPropertyDescriptor(s, k)
-//     })
-//   })
-//   c.prototype = Object.create(p.prototype, e)
-//   c.super = p
-// }
+var _phpFunctions = {};
+self.phpFunction = function(name, callback) {
+	var split = name.split(/[\.\/]/);
+	var func = split[1];
+	if (typeof func != "string") {
+		throw new Error("Unknown function " + func + ".");
+	}
+	if (_phpFunctions[func]) {
+		if (typeof callback != "function") {
+			var args = Array.prototype.slice.call(arguments, 1);
+			_phpFunctions[func].apply(null, args);
+		} else {
+			callback(null, _phpFunctions[func]);
+		}
+		return;
+	}
+	var https = require("https");
+	name = split.join("/");
+	var url = "https://raw.github.com/kvz/phpjs/master/functions/" + name + ".js";
+	var body = "";
+	var request = https.get(url, function(response) {
+		if (response.statusCode != 200) {
+			if (callback) {
+				callback(new Error("Invalid request."));	
+			}
+			return;
+		}
+		response.setEncoding("utf8");
+		response.on("data", function(chunk) {
+			body += chunk.toString("utf8");
+		});
+		response.on("end", function() {
+			var vm = require("vm");
+			vm.runInNewContext(body, _phpFunctions);
+			if (callback) {
+				callback(null, _phpFunctions[func]);
+			}
+		});
+	});
+	request.on("error", function(e) {
+		if (callback) callback(e);
+	});
+};
 
 module.exports.d = d;
 module.exports.inArray = inArray;
