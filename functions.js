@@ -889,6 +889,66 @@ self.phpFunction = function(name, callback) {
 	});
 };
 
+
+// https://github.com/unclechu/node-deep-extend/blob/master/index.js
+self.deepExtend = function deepExtend() {
+	if (arguments.length < 2) return arguments[0];
+	var target = arguments[0];
+	var args = Array.prototype.slice.call(arguments, 1);
+	var key, val, src, clone;
+	args.forEach(function (obj) {
+		if (typeof obj !== 'object') return;
+		for (key in obj) {
+			if ( ! (key in obj)) continue;
+			src = target[key];
+			val = obj[key];
+			if (val === target) continue;
+			if (typeof val !== 'object' || val === null) {
+				target[key] = val;
+				continue;
+			}
+			if (typeof src !== 'object' || src === null) {
+				clone = (Array.isArray(val)) ? [] : {};
+				target[key] = deepExtend(clone, val);
+				continue;
+			}
+			if (Array.isArray(val)) {
+				clone = (Array.isArray(src)) ? src : [];
+			} else {
+				clone = (!Array.isArray(src)) ? src : {};
+			}
+			target[key] = deepExtend(clone, val);
+		}
+	});
+	return target;
+}
+
+
+/**
+ * http://en.wikipedia.org/wiki/Bit_field
+ * A bit field is a common idiom used in computer programming to
+ * compactly store a value as a short series of bits.
+ */
+
+self.setBit = function(bitMask, flag) {
+	bitMask |= flag;
+	return bitMask;
+}
+
+self.resetBit = function(bitMask, flag) {
+	bitMask &= ~flag;
+	return bitMask;
+}
+
+self.isSetBit = function(bitMask, flag) {
+	return (bitMask & flag) != 0;
+}
+
+self.toggleBit = function(bitMask, flag) {
+	bitMask ^= flag;
+	return bitMask;
+}
+
 module.exports.d = d;
 module.exports.inArray = inArray;
 module.exports.isArray = isArray;
