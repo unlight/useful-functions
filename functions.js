@@ -949,6 +949,83 @@ self.toggleBit = function(bitMask, flag) {
 	return bitMask;
 }
 
+// colorizeMessage
+new function () {
+
+	function checkColorSupport() {
+		return true;
+	}
+
+	var foregroundColor = {
+		'Black'  : 30,
+		'Blue'   : 34,
+		'Green'  : 32,
+		'Cyan'   : 36,
+		'Red'    : 31,
+		'Purple' : 35,
+		'Brown'  : 33,
+		'Yellow' : 33,
+		'White'  : 37
+	};
+
+	function getColorCode(color) {
+		if (color == null || !foregroundColor[color]) {
+			return "\033[0m";
+		}
+		return "\033[" + foregroundColor[color] + "m";
+	}
+
+	function colorizeForeground(colorToken) { // colorToken = ^1
+		colorToken = String(colorToken);
+		var n = colorToken.substr(1, 1);
+		if (!n) return getColorCode();
+		switch (n) {
+			case "0": return getColorCode("White");
+			case "1": return getColorCode("Red");
+			case "2": return getColorCode("Green");
+			case "3": return getColorCode("Yellow");
+			case "4": return getColorCode("Blue");
+			case "5": return getColorCode("Turq");
+			case "6": return getColorCode("Pink");
+			case "7": return getColorCode("LightRed");
+			case "8": return getColorCode("Grey");
+			case "9": return getColorCode("GreyWhite");
+			default: break;
+		}
+		return getColorCode(); // reset
+	}
+
+	self.colorize = function(paintString) { // ex- Paint
+		paintString = String(paintString);
+		if (!checkColorSupport()) {
+			return preg_replace("/\^\d/", "", paintString);
+		}
+		var outString = "";
+		var pos = paintString.indexOf("^");
+		while (pos > -1) {
+			if (pos > 0) {
+				outString += paintString.substr(0, pos);
+				paintString = paintString.substr(pos);
+				pos = 0;
+			}
+			var colorToken = paintString.substr(pos, 2);
+			var colorCode = colorToken.substr(1);
+			var n = paintString.length - 2;
+			if (n > 0) {
+				paintString = paintString.substr(-n);
+			} else {
+				paintString = "";
+			}
+			outString += colorizeForeground(colorToken);
+			pos = paintString.indexOf("^");
+		}
+		if (paintString != "") outString += paintString;
+		outString += getColorCode();
+		return outString;
+	}
+};
+
+
 module.exports.d = d;
 module.exports.inArray = inArray;
 module.exports.isArray = isArray;
