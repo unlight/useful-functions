@@ -1,3 +1,15 @@
+DEPRECATED
+----------
+This module does not follow best practice, do not use it.
+For researches and arhceologiust only.
+Some of functions has been moved to standalone modules, check [packages of the author](https://www.npmjs.org/~iamthes).
+
+**This module was splitted to several:**  
+- https://github.com/unlight/setValueR
+- https://github.com/unlight/getValueR
+- https://github.com/unlight/phpfn
+- https://github.com/unlight/google-translate
+
 DESCRIPTION
 -----------
 Useful functions for everyday javascript.

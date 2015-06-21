@@ -274,28 +274,30 @@ self.googleTranslate = function(string, settings, callback) {
 	var from = settings.from || "ru";
 	var to = settings.to || "en";
 
-	var http = require('http');
+	var http = require('https');
 	var querystring = require('querystring');
 
 	// string = encodeURIComponent(string);
 
 	var data = {
 		client: "t",
-		text: string,
+		q: string,
 		sl: from,
 		tl: to,
 		ie: "UTF-8",
-		oe: "UTF-8"
+		oe: "UTF-8",
+		hl: from,
+		dt:"t"
 	};
 
 	var options = {
 		host: "translate.google.com",
-		port: 80,
+		port: 443,
 		method: "GET",
 		headers: {
-			"Referer": "http://translate.google.com/"
+			"Referer": "https://translate.google.com/"
 		},
-		path: "/translate_a/t?" + querystring.stringify(data)
+		path: "/translate_a/single?" + querystring.stringify(data)
 	};
 
 	var body = "";
