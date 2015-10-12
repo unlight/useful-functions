@@ -9,6 +9,7 @@ Some of functions has been moved to standalone modules, check [packages of the a
 - https://github.com/unlight/getValueR
 - https://github.com/unlight/phpfn
 - https://github.com/unlight/google-translate
+- https://github.com/unlight/clean-up-string
 
 DESCRIPTION
 -----------
